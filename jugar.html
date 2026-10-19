@@ -4,45 +4,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jugar | RetroPlay</title>
+  <title>Darkwatch | RetroPlay</title>
   <style>
     body {
       margin: 0;
-      padding: 30px 20px;
+      padding: 20px;
       background: #100d1c;
       color: white;
       font-family: Arial, sans-serif;
-      text-align: center;
     }
-    main {
-      max-width: 800px;
-      margin: 50px auto;
-      padding: 25px;
-      background: #201932;
-      border-radius: 15px;
+    header, main {
+      max-width: 1000px;
+      margin: 0 auto 24px;
     }
     h1 { color: #c49aff; }
-    p { line-height: 1.6; color: #ddd; }
-    input { max-width: 100%; margin: 20px 0; }
+    .screen {
+      width: 100%;
+      height: 70vh;
+      min-height: 450px;
+      border: 1px solid #65438c;
+      border-radius: 12px;
+      background: #08070c;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 12px;
+    }
     a { color: #c49aff; }
-    #mensaje { color: #f4d58d; }
+    p { line-height: 1.6; }
   </style>
 </head>
 <body>
-  <main>
+  <header>
     <h1>🎮 RetroPlay</h1>
-    <h2>Darkwatch — PlayStation 2</h2>
-    <p>Esta es la pantalla de juego de RetroPlay.</p>
-    <p>El reproductor aún no está integrado.</p>
-
-    <p>Cuando integremos un emulador compatible, podrás cargar
-    tu propia copia del juego aquí.</p>
-
-    <p id="mensaje">
-      Próximamente: reproductor de PS2.
-    </p>
-
+    <p>Darkwatch · PlayStation 2</p>
     <a href="./index.html">← Volver al catálogo</a>
+  </header>
+
+  <main>
+    <h2>Jugar en RetroPlay</h2>
+    <div class="screen">
+      <iframe
+        src="https://playjs.purei.org/"
+        title="Emulador Play! de PS2"
+        allow="fullscreen"
+        loading="eager">
+      </iframe>
+    </div>
+    <p>
+      Selecciona tu propia imagen de disco cuando el emulador
+      termine de cargar. La compatibilidad puede variar.
+    </p>
+    <p>
+      Si el reproductor no aparece,
+      <a href="https://playjs.purei.org/" target="_blank"
+         rel="noopener noreferrer">
+        abre Play!.js por separado
+      </a>.
+    </p>
   </main>
 </body>
 </html>

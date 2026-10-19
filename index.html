@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetroPlay | Juegos clásicos</title>
+  <meta name="description" content="RetroPlay, tu catálogo de videojuegos clásicos.">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #100d1c;
+      color: #f5f2ff;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 24px 7%;
+      background: #19132b;
+      border-bottom: 1px solid #392755;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #c49aff;
+      font-size: 32px;
+    }
+
+    header p {
+      margin-bottom: 0;
+      color: #c6bfd5;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    .intro {
+      margin-bottom: 35px;
+    }
+
+    .intro h2 {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .intro p {
+      color: #c6bfd5;
+      line-height: 1.6;
+    }
+
+    .games {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 24px;
+    }
+
+    .game {
+      overflow: hidden;
+      background: #201932;
+      border: 1px solid #42305d;
+      border-radius: 14px;
+    }
+
+    .game img {
+      display: block;
+      width: 100%;
+      height: 260px;
+      object-fit: contain;
+      background: #0b0912;
+    }
+
+    .game-info {
+      padding: 20px;
+    }
+
+    .platform {
+      color: #c49aff;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .game h3 {
+      margin: 10px 0;
+      font-size: 22px;
+    }
+
+    .game p {
+      color: #c6bfd5;
+      line-height: 1.5;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 11px 16px;
+      border-radius: 8px;
+      background: #8b5cf6;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .button:hover {
+      background: #a47bff;
+    }
+
+    footer {
+      padding: 25px 20px;
+      text-align: center;
+      color: #aaa0bd;
+      border-top: 1px solid #392755;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🎮 RetroPlay</h1>
+    <p>Los clásicos nunca mueren.</p>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Explora los clásicos</h2>
+      <p>Descubre juegos legendarios de distintas consolas y generaciones.</p>
+    </section>
+
+    <section class="games">
+      <article class="game">
+        <!-- Cambia darkwatch.jpg por el nombre exacto de tu imagen -->
+        <img src="darkwatch.jpg" alt="Portada de Darkwatch"
+             onerror="this.style.display='none'">
+
+        <div class="game-info">
+          <span class="platform">PlayStation 2</span>
+          <h3>Darkwatch</h3>
+          <p>Un juego de acción en primera persona que mezcla el Salvaje Oeste con el terror sobrenatural.</p>
+          <a class="button"
+             href="https://www.gamesgx.net/ps2/darkwatch"
+             target="_blank" rel="noopener noreferrer">
+            Ver juego
+          </a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    RetroPlay · Catálogo de videojuegos clásicos
+  </footer>
+</body>
+</html>

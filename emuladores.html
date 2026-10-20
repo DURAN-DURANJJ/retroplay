@@ -1,81 +1,195 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PS2 y Wii en el navegador</title>
+<title>RetroPlay - Emuladores</title>
+
 <style>
-  .emu { max-width:1000px; margin:0 auto; font-family:system-ui,sans-serif; color:#e8eaf0; }
-  .emu-tabs { display:flex; gap:8px; }
-  .emu-tabs button { padding:10px 16px; border:1px solid #2c313c; border-bottom:none; border-radius:8px 8px 0 0;
-                     background:#1a1d24; color:#9aa3b2; cursor:pointer; font-size:.95rem; }
-  .emu-tabs button.active { background:#232834; color:#fff; border-color:#3b82f6; }
-  .emu-panel { display:none; background:#232834; border:1px solid #2c313c; border-radius:0 10px 10px 10px; padding:16px; }
-  .emu-panel.active { display:block; }
-  .emu-screen { width:100%; height:600px; background:#000; border-radius:8px; overflow:hidden; }
-  .emu-screen iframe { width:100%; height:100%; border:0; }
-  .emu-warn { background:#2a2416; border:1px solid #5b4a1a; color:#e6c76a; padding:10px 12px;
-              border-radius:8px; font-size:.85rem; margin-bottom:12px; }
-  .emu-note { color:#9aa3b2; font-size:.85rem; margin:12px 0 0; line-height:1.5; }
-  .emu-note a { color:#3b82f6; }
-</style>
-</head>
-<body style="background:#0f1115; padding:20px;">
+  * { box-sizing: border-box; }
 
-<div class="emu">
-  <div class="emu-tabs">
-    <button class="active" data-tab="ps2">PlayStation 2</button>
-    <button data-tab="wii">Nintendo Wii / GameCube</button>
-  </div>
-
-  <!-- PS2 -->
-  <div id="ps2" class="emu-panel active">
-    <div class="emu-warn">Experimental: solo unos cientos de juegos funcionan bien.</div>
-    <div class="emu-screen" id="ps2-screen"></div>
-    <p class="emu-note">
-      Emulador: Play!.js. Acepta ISO, CSO, CHD, ISZ, BIN o ELF.
-      Si sale en blanco, <a href="https://playjs.purei.org" target="_blank" rel="noopener">ábrelo en pestaña nueva</a>.
-    </p>
-  </div>
-
-  <!-- Wii / GameCube -->
-  <div id="wii" class="emu-panel">
-    <div class="emu-warn">Muy experimental: va lento (renderizado por software) y muchos juegos no arrancan.</div>
-    <div class="emu-screen" id="wii-screen"></div>
-    <p class="emu-note">
-      Emulador: DolphinWeb (proyecto de la comunidad). Necesita HTTPS y un navegador reciente.
-      Si sale en blanco, <a href="https://dolphinweb.bitaxislabs.com" target="_blank" rel="noopener">ábrelo en pestaña nueva</a>.
-    </p>
-  </div>
-</div>
-
-<script>
-  const sources = {
-    ps2: 'https://playjs.purei.org',
-    wii: 'https://dolphinweb.bitaxislabs.com'
-  };
-
-  function loadFrame(tab) {
-    const box = document.getElementById(tab + '-screen');
-    if (box.querySelector('iframe')) return;
-    const f = document.createElement('iframe');
-    f.src = sources[tab];
-    f.title = tab === "ps2" ? "Emulador de PS2" : "Emulador de Wii y GameCube";
-f.setAttribute("allowfullscreen", "");
-    f.allow = 'fullscreen; gamepad; autoplay; cross-origin-isolated';
-    box.appendChild(f);
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #0f1115;
+    color: #f3f4f6;
+    font-family: system-ui, Arial, sans-serif;
   }
 
-  document.querySelectorAll('.emu-tabs button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.emu-tabs button, .emu-panel').forEach(el => el.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
-      loadFrame(btn.dataset.tab);
+  .emu {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    color: #c4b5fd;
+    margin-bottom: 8px;
+  }
+
+  .intro {
+    color: #a5adbd;
+    margin-bottom: 24px;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .tabs button {
+    padding: 12px 16px;
+    border: 1px solid #383344;
+    border-radius: 9px;
+    background: #1a1d24;
+    color: #c5c9d3;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  .tabs button.active {
+    background: #6d28d9;
+    color: white;
+    border-color: #a78bfa;
+  }
+
+  .panel {
+    display: none;
+    padding: 24px;
+    background: #1a1d24;
+    border: 1px solid #34303e;
+    border-radius: 14px;
+  }
+
+  .panel.active { display: block; }
+
+  .game-icon {
+    font-size: 54px;
+    margin-bottom: 10px;
+  }
+
+  .warning {
+    padding: 12px;
+    margin: 18px 0;
+    background: #292315;
+    border: 1px solid #66521e;
+    border-radius: 9px;
+    color: #f3d77c;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .play {
+    display: inline-block;
+    padding: 14px 22px;
+    border-radius: 9px;
+    background: #7c3aed;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 8px;
+  }
+
+  .play:hover { background: #6d28d9; }
+
+  .note {
+    margin-top: 18px;
+    color: #a5adbd;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .back {
+    display: inline-block;
+    margin-top: 24px;
+    color: #c4b5fd;
+    text-decoration: none;
+  }
+</style>
+</head>
+
+<body>
+<main class="emu">
+
+  <h1>🎮 RetroPlay — Emuladores</h1>
+  <p class="intro">
+    Selecciona una consola y abre el emulador para cargar tu juego.
+  </p>
+
+  <div class="tabs">
+    <button class="active" data-tab="ps2">PlayStation 2</button>
+    <button data-tab="wii">Wii / GameCube</button>
+  </div>
+
+  <section id="ps2" class="panel active">
+    <div class="game-icon">🎮</div>
+    <h2>PlayStation 2</h2>
+    <p>Emulador web Play!.js.</p>
+
+    <div class="warning">
+      Emulador experimental. La compatibilidad y el rendimiento
+      dependen del juego y del ordenador.
+    </div>
+
+    <a class="play"
+       href="https://playjs.purei.org/"
+       target="_blank"
+       rel="noopener noreferrer">
+       ▶ Abrir emulador de PS2
+    </a>
+
+    <p class="note">
+      Se abrirá en otra pestaña. Allí podrás seleccionar el archivo
+      del juego desde tu ordenador. Utiliza copias de juegos que
+      tengas derecho a usar.
+    </p>
+  </section>
+
+  <section id="wii" class="panel">
+    <div class="game-icon">🕹️</div>
+    <h2>Nintendo Wii / GameCube</h2>
+    <p>Acceso al proyecto web DolphinWeb.</p>
+
+    <div class="warning">
+      Este servicio puede no estar disponible o no funcionar
+      correctamente. Primero comprueba si carga directamente.
+    </div>
+
+    <a class="play"
+       href="https://dolphinweb.bitaxislabs.com/"
+       target="_blank"
+       rel="noopener noreferrer">
+       ▶ Abrir emulador de Wii / GameCube
+    </a>
+
+    <p class="note">
+      Este enlace depende de un servicio externo y no podemos
+      garantizar que funcione.
+    </p>
+  </section>
+
+  <a class="back" href="index.html">← Volver a RetroPlay</a>
+
+</main>
+
+<script>
+  document.querySelectorAll('.tabs button').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.tabs button').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      document.querySelectorAll('.panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+
+      button.classList.add('active');
+      document.getElementById(button.dataset.tab).classList.add('active');
     });
   });
-
-  loadFrame('ps2'); // carga PS2 al abrir la página
 </script>
+
 </body>
 </html>

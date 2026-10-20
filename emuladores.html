@@ -60,6 +60,8 @@
     if (box.querySelector('iframe')) return;
     const f = document.createElement('iframe');
     f.src = sources[tab];
+    f.title = tab === "ps2" ? "Emulador de PS2" : "Emulador de Wii y GameCube";
+f.setAttribute("allowfullscreen", "");
     f.allow = 'fullscreen; gamepad; autoplay; cross-origin-isolated';
     box.appendChild(f);
   }

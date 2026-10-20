@@ -1,72 +1,37 @@
 
 <!DOCTYPE html>
 <html lang="es">
-<script src="./coi-serviceworker.js"></script><head>
+<head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Darkwatch | RetroPlay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jugar - RetroPlay</title>
   <style>
     body {
-      margin: 0;
-      padding: 20px;
-      background: #100d1c;
+      background: #171225;
       color: white;
       font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px 20px;
     }
-    header, main {
-      max-width: 1000px;
-      margin: 0 auto 24px;
+    a {
+      display: inline-block;
+      background: #8b5cf6;
+      color: white;
+      padding: 15px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      margin: 15px;
     }
-    h1 { color: #c49aff; }
-    .screen {
-      width: 100%;
-      height: 70vh;
-      min-height: 450px;
-      border: 1px solid #65438c;
-      border-radius: 12px;
-      background: #08070c;
-    }
- <iframe
-  src="https://nostalith.com/play/"
-  title="Emulador de PS2"
-  allow="cross-origin-isolated"
-  credentialless
-  allowfullscreen
-  style="display:block; width:100%; height:100vh; border:0;">
-</iframe>
-    }
-    a { color: #c49aff; }
-    p { line-height: 1.6; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🎮 RetroPlay</h1>
-    <p>Darkwatch · PlayStation 2</p>
-    <a href="./index.html">← Volver al catálogo</a>
-  </header>
-
-  <main>
-    <h2>Jugar en RetroPlay</h2>
-    <div class="screen">
-      <iframe
-        src="https://nostalith.com/play/"
-        title="Emulador Play! de PS2"
-        allow="fullscreen"
-        loading="eager">
-      </iframe>
-    </div>
-    <p>
-      Selecciona tu propia imagen de disco cuando el emulador
-      termine de cargar. La compatibilidad puede variar.
-    </p>
-    <p>
-      Si el reproductor no aparece,
-      <a href="https://playjs.purei.org/" target="_blank"
-         rel="noopener noreferrer">
-        abre Play!.js por separado
-      </a>.
-    </p>
-  </main>
+  <h1>RetroPlay</h1>
+  <h2>Darkwatch - PlayStation 2</h2>
+  <p>Abre el emulador para jugar en tu navegador.</p>
+  <a href="https://nostalith.com/play/" target="_blank"
+     rel="noopener noreferrer">
+    Abrir emulador
+  </a>
+  <p><a href="./index.html">Volver a RetroPlay</a></p>
 </body>
 </html>

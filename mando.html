@@ -1,0 +1,41 @@
+<script>
+  // índice del botón del mando (mapeo estándar) -> tecla
+  const MAP = {
+    0:  { code:'KeyX',       keyCode:88 },  // X
+    1:  { code:'KeyC',       keyCode:67 },  // Círculo
+    2:  { code:'KeyZ',       keyCode:90 },  // Cuadrado
+    3:  { code:'KeyV',       keyCode:86 },  // Triángulo
+    4:  { code:'KeyA',       keyCode:65 },  // L1
+    5:  { code:'KeyS',       keyCode:83 },  // R1
+    8:  { code:'ShiftRight', keyCode:16 },  // Select
+    9:  { code:'Enter',      keyCode:13 },  // Start
+    12: { code:'ArrowUp',    keyCode:38 },
+    13: { code:'ArrowDown',  keyCode:40 },
+    14: { code:'ArrowLeft',  keyCode:37 },
+    15: { code:'ArrowRight', keyCode:39 }
+  };
+
+  const pressed = {};
+
+  function fire(type, k) {
+    const e = new KeyboardEvent(type, { code:k.code, key:k.code, bubbles:true });
+    Object.defineProperty(e, 'keyCode', { get: () => k.keyCode });
+    Object.defineProperty(e, 'which',   { get: () => k.keyCode });
+    (document.activeElement || document).dispatchEvent(e);
+  }
+
+  function poll() {
+    for (const pad of navigator.getGamepads()) {
+      if (!pad) continue;
+      for (const [i, k] of Object.entries(MAP)) {
+        const down = pad.buttons[i] && pad.buttons[i].pressed;
+        const id = pad.index + '-' + i;
+        if (down && !pressed[id]) { pressed[id] = true;  fire('keydown', k); }
+        if (!down && pressed[id]) { pressed[id] = false; fire('keyup', k); }
+      }
+    }
+    requestAnimationFrame(poll);
+  }
+
+  window.addEventListener('gamepadconnected', () => requestAnimationFrame(poll));
+</script>

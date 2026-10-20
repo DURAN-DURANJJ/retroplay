@@ -1,41 +1,320 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RetroPlay - Prueba de mando</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #100b1d;
+      color: #f5f3ff;
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      max-width: 850px;
+      margin: auto;
+    }
+
+    h1 { color: #c4b5fd; }
+
+    .panel {
+      background: #211832;
+      border: 1px solid #493663;
+      border-radius: 14px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .status {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .connected { color: #86efac; }
+    .disconnected { color: #fca5a5; }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+      gap: 10px;
+    }
+
+    .button {
+      padding: 12px;
+      border-radius: 9px;
+      background: #302342;
+      border: 1px solid #55436c;
+      text-align: center;
+    }
+
+    .button.active {
+      background: #6d28d9;
+      border-color: #c4b5fd;
+      color: white;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 18px;
+      background: #8b5cf6;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px 5px 5px 0;
+    }
+
+    a { color: #c4b5fd; }
+
+    .small { color: #c4b5fd; line-height: 1.5; }
+    #axes { white-space: pre-wrap; font-family: monospace; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>🎮 RetroPlay — Prueba de mando</h1>
+  <p>Conecta tu DualShock 4 por USB o Bluetooth y pulsa un botón.</p>
+
+  <section class="panel">
+    <div id="status" class="status disconnected">
+      Mando no detectado
+    </div>
+    <p id="details" class="small">
+      Si no aparece, pulsa un botón del mando y luego «Buscar mando».
+    </p>
+    <button id="scan">Buscar mando</button>
+    <button id="stop">Detener prueba</button>
+  </section>
+
+  <section class="panel">
+    <h2>Botones</h2>
+    <div id="buttons" class="buttons"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Joysticks analógicos</h2>
+    <div id="axes">Esperando datos...</div>
+    <p class="small">
+      Los valores van aproximadamente de -1 a 1.
+      Mueve los dos joysticks para comprobarlos.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Prueba de teclas</h2>
+    <p class="small">
+      Esta sección comprueba el mando. Todavía no garantiza que
+      las teclas simuladas funcionen dentro de un emulador externo.
+    </p>
+    <label>
+      <input type="checkbox" id="keyboardMode">
+      Activar traducción de botones a teclado
+    </label>
+    <p id="keyStatus">Traducción desactivada.</p>
+  </section>
+
+  <p><a href="index.html">← Volver a RetroPlay</a></p>
+</main>
+
 <script>
-  // índice del botón del mando (mapeo estándar) -> tecla
   const MAP = {
-    0:  { code:'KeyX',       keyCode:88 },  // X
-    1:  { code:'KeyC',       keyCode:67 },  // Círculo
-    2:  { code:'KeyZ',       keyCode:90 },  // Cuadrado
-    3:  { code:'KeyV',       keyCode:86 },  // Triángulo
-    4:  { code:'KeyA',       keyCode:65 },  // L1
-    5:  { code:'KeyS',       keyCode:83 },  // R1
-    8:  { code:'ShiftRight', keyCode:16 },  // Select
-    9:  { code:'Enter',      keyCode:13 },  // Start
-    12: { code:'ArrowUp',    keyCode:38 },
-    13: { code:'ArrowDown',  keyCode:40 },
-    14: { code:'ArrowLeft',  keyCode:37 },
-    15: { code:'ArrowRight', keyCode:39 }
+    0:  { code: 'KeyX',       keyCode: 88,  name: 'X / Cruz' },
+    1:  { code: 'KeyC',       keyCode: 67,  name: 'Círculo' },
+    2:  { code: 'KeyZ',       keyCode: 90,  name: 'Cuadrado' },
+    3:  { code: 'KeyV',       keyCode: 86,  name: 'Triángulo' },
+    4:  { code: 'KeyA',       keyCode: 65,  name: 'L1' },
+    5:  { code: 'KeyS',       keyCode: 83,  name: 'R1' },
+    8:  { code: 'ShiftRight', keyCode: 16,  name: 'Share / Select' },
+    9:  { code: 'Enter',      keyCode: 13,  name: 'Options / Start' },
+    12: { code: 'ArrowUp',    keyCode: 38,  name: 'Arriba' },
+    13: { code: 'ArrowDown',  keyCode: 40,  name: 'Abajo' },
+    14: { code: 'ArrowLeft',  keyCode: 37,  name: 'Izquierda' },
+    15: { code: 'ArrowRight', keyCode: 39,  name: 'Derecha' }
   };
 
-  const pressed = {};
+  const status = document.getElementById('status');
+  const details = document.getElementById('details');
+  const buttonsBox = document.getElementById('buttons');
+  const axesBox = document.getElementById('axes');
+  const keyboardMode = document.getElementById('keyboardMode');
+  const keyStatus = document.getElementById('keyStatus');
 
-  function fire(type, k) {
-    const e = new KeyboardEvent(type, { code:k.code, key:k.code, bubbles:true });
-    Object.defineProperty(e, 'keyCode', { get: () => k.keyCode });
-    Object.defineProperty(e, 'which',   { get: () => k.keyCode });
-    (document.activeElement || document).dispatchEvent(e);
+  let running = true;
+  let animationId = null;
+  let activePadIndex = null;
+  const previous = {};
+
+  const names = [
+    'X / Cruz', 'Círculo', 'Cuadrado', 'Triángulo',
+    'L1', 'R1', 'L2', 'R2', 'Share / Select', 'Options / Start',
+    'L3', 'R3', 'Arriba', 'Abajo', 'Izquierda', 'Derecha',
+    'PS', 'Touchpad'
+  ];
+
+  function createButtonLabels(count) {
+    buttonsBox.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'button';
+      el.id = 'btn-' + i;
+      el.textContent = i + ': ' + (names[i] || 'Botón ' + i);
+      buttonsBox.appendChild(el);
+    }
+  }
+
+  function fire(type, key) {
+    const event = new KeyboardEvent(type, {
+      code: key.code,
+      key: key.code.startsWith('Arrow')
+        ? key.code.replace('Arrow', '')
+        : key.code.startsWith('Key')
+          ? key.code.slice(3).toLowerCase()
+          : key.code === 'Enter' ? 'Enter' : 'Shift',
+      bubbles: true,
+      cancelable: true
+    });
+
+    try {
+      Object.defineProperty(event, 'keyCode', {
+        get: () => key.keyCode
+      });
+      Object.defineProperty(event, 'which', {
+        get: () => key.keyCode
+      });
+    } catch (e) {}
+
+    document.dispatchEvent(event);
+    window.dispatchEvent(event);
   }
 
   function poll() {
-    for (const pad of navigator.getGamepads()) {
-      if (!pad) continue;
-      for (const [i, k] of Object.entries(MAP)) {
-        const down = pad.buttons[i] && pad.buttons[i].pressed;
-        const id = pad.index + '-' + i;
-        if (down && !pressed[id]) { pressed[id] = true;  fire('keydown', k); }
-        if (!down && pressed[id]) { pressed[id] = false; fire('keyup', k); }
+    if (!running) return;
+
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let pad = null;
+
+    if (activePadIndex !== null && pads[activePadIndex]) {
+      pad = pads[activePadIndex];
+    } else {
+      for (const candidate of pads) {
+        if (candidate) {
+          pad = candidate;
+          activePadIndex = candidate.index;
+          break;
+        }
       }
     }
-    requestAnimationFrame(poll);
+
+    if (!pad) {
+      status.textContent = 'Mando no detectado';
+      status.className = 'status disconnected';
+      details.textContent =
+        'Conecta el mando y pulsa un botón. Después, pulsa «Buscar mando».';
+      axesBox.textContent = 'Esperando datos...';
+      animationId = requestAnimationFrame(poll);
+      return;
+    }
+
+    status.textContent = 'Mando conectado';
+    status.className = 'status connected';
+    details.textContent =
+      'Nombre: ' + pad.id + ' | Índice: ' + pad.index +
+      ' | Botones: ' + pad.buttons.length;
+
+    if (buttonsBox.children.length !== pad.buttons.length) {
+      createButtonLabels(pad.buttons.length);
+    }
+
+    pad.buttons.forEach((button, i) => {
+      const el = document.getElementById('btn-' + i);
+      if (el) {
+        el.classList.toggle('active', button.pressed);
+        if (button.pressed && !button.touched) {
+          // La lectura visual también funciona con mandos
+          // que no informan del estado "touched".
+        }
+      }
+
+      const key = MAP[i];
+      if (!key) return;
+
+      const id = pad.index + '-' + i;
+      const down = button.pressed;
+      const wasDown = !!previous[id];
+
+      if (keyboardMode.checked && down && !wasDown) {
+        fire('keydown', key);
+      }
+      if (keyboardMode.checked && !down && wasDown) {
+        fire('keyup', key);
+      }
+      previous[id] = down;
+    });
+
+    axesBox.textContent = pad.axes.map((value, i) => {
+      return 'Eje ' + i + ': ' + value.toFixed(3);
+    }).join('\n');
+
+    keyStatus.textContent = keyboardMode.checked
+      ? 'Traducción activada. Las teclas se envían a la página.'
+      : 'Traducción desactivada. Solo se comprueba el mando.';
+
+    animationId = requestAnimationFrame(poll);
   }
 
-  window.addEventListener('gamepadconnected', () => requestAnimationFrame(poll));
+  function start() {
+    running = true;
+    if (animationId !== null) cancelAnimationFrame(animationId);
+    animationId = requestAnimationFrame(poll);
+  }
+
+  document.getElementById('scan').addEventListener('click', () => {
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const pad = Array.from(pads).find(p => p);
+    if (pad) activePadIndex = pad.index;
+    start();
+  });
+
+  document.getElementById('stop').addEventListener('click', () => {
+    running = false;
+    if (animationId !== null) cancelAnimationFrame(animationId);
+    status.textContent = 'Prueba detenida';
+    status.className = 'status';
+    Object.keys(previous).forEach(id => {
+      if (previous[id] && keyboardMode.checked) {
+        const index = Number(id.split('-').pop());
+        if (MAP[index]) fire('keyup', MAP[index]);
+      }
+      delete previous[id];
+    });
+  });
+
+  keyboardMode.addEventListener('change', () => {
+    if (!keyboardMode.checked) {
+      Object.keys(previous).forEach(id => {
+        const index = Number(id.split('-').pop());
+        if (previous[id] && MAP[index]) fire('keyup', MAP[index]);
+      });
+    }
+  });
+
+  window.addEventListener('gamepadconnected', event => {
+    activePadIndex = event.gamepad.index;
+    start();
+  });
+
+  window.addEventListener('gamepaddisconnected', () => {
+    activePadIndex = null;
+  });
+
+  createButtonLabels(18);
+  start();
 </script>
+</body>
+</html>
